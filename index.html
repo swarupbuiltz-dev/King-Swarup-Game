@@ -1,0 +1,2715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>King Swarup — The Royal Trials</title>
+
+<style>
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root {
+    --gold: #ffd76a;
+    --gold-light: #fff0a8;
+    --purple: #8c5cff;
+    --purple-light: #b99aff;
+    --red: #ff4d68;
+    --green: #45e69b;
+    --blue: #61b7ff;
+    --dark: #070511;
+    --panel: rgba(18, 12, 36, 0.78);
+    --border: rgba(255, 215, 106, 0.22);
+    --text: #f8f4ff;
+    --muted: #aaa2bd;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    background: #05030b;
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+#game {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    isolation: isolate;
+
+    background:
+        radial-gradient(circle at 50% 25%, rgba(110, 58, 190, 0.30), transparent 30%),
+        radial-gradient(circle at 15% 80%, rgba(52, 31, 100, 0.28), transparent 35%),
+        radial-gradient(circle at 85% 75%, rgba(78, 34, 120, 0.25), transparent 35%),
+        linear-gradient(180deg, #0c0717 0%, #05030b 100%);
+}
+
+
+/* =========================================================
+   STARS
+========================================================= */
+
+.stars,
+.stars::before,
+.stars::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.stars {
+    z-index: -4;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,.85) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255,215,106,.5) 1px, transparent 1.5px);
+    background-size: 95px 95px, 145px 145px;
+    background-position: 10px 20px, 55px 80px;
+    opacity: .42;
+    animation: starDrift 28s linear infinite;
+}
+
+.stars::before {
+    content: "";
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,.65) 1px, transparent 1.5px);
+    background-size: 180px 180px;
+    opacity: .35;
+    animation: starDriftReverse 35s linear infinite;
+}
+
+@keyframes starDrift {
+    from { transform: translateY(0); }
+    to { transform: translateY(95px); }
+}
+
+@keyframes starDriftReverse {
+    from { transform: translateY(0); }
+    to { transform: translateY(-180px); }
+}
+
+
+/* =========================================================
+   FLOATING PARTICLES
+========================================================= */
+
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,215,106,.7);
+    box-shadow: 0 0 12px rgba(255,215,106,.8);
+    animation: floatParticle linear infinite;
+}
+
+@keyframes floatParticle {
+    from {
+        transform: translateY(110vh) translateX(0);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: .8;
+    }
+
+    85% {
+        opacity: .8;
+    }
+
+    to {
+        transform: translateY(-10vh) translateX(80px);
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   VIGNETTE
+========================================================= */
+
+.vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+
+    box-shadow:
+        inset 0 0 160px rgba(0,0,0,.95),
+        inset 0 0 40px rgba(0,0,0,.7);
+}
+
+
+/* =========================================================
+   GAME CONTAINER
+========================================================= */
+
+.game-content {
+    width: min(960px, 92%);
+    min-height: 100vh;
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 55px 0;
+}
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    width: 100%;
+    display: none;
+    text-align: center;
+
+    animation: screenIn .65s cubic-bezier(.2,.8,.2,1);
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes screenIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(.97);
+        filter: blur(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+
+/* =========================================================
+   ROYAL HEADER
+========================================================= */
+
+.eyebrow {
+    color: var(--gold);
+    font-size: .78rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: .85;
+}
+
+.title {
+    font-size: clamp(2.3rem, 7vw, 5.6rem);
+    line-height: .95;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    background: linear-gradient(
+        180deg,
+        #fff7c7,
+        #ffd76a 45%,
+        #b87921
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    text-shadow: 0 8px 35px rgba(255,190,55,.18);
+}
+
+.subtitle {
+    max-width: 720px;
+    margin: 20px auto 0;
+
+    color: #c7bfd5;
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    line-height: 1.7;
+}
+
+.divider {
+    width: 150px;
+    height: 1px;
+    margin: 28px auto;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--gold),
+        transparent
+    );
+}
+
+
+/* =========================================================
+   CASTLE
+========================================================= */
+
+.castle {
+    font-size: clamp(5rem, 17vw, 10rem);
+    line-height: 1;
+    margin-bottom: 24px;
+
+    filter:
+        drop-shadow(0 0 25px rgba(164,95,255,.45))
+        drop-shadow(0 18px 35px rgba(0,0,0,.7));
+
+    animation:
+        castleFloat 4s ease-in-out infinite,
+        castleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes castleFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes castleGlow {
+    from { filter: drop-shadow(0 0 18px rgba(164,95,255,.35)); }
+    to { filter: drop-shadow(0 0 38px rgba(255,215,106,.28)); }
+}
+
+
+/* =========================================================
+   ROYAL PANEL
+========================================================= */
+
+.royal-panel {
+    position: relative;
+
+    width: min(760px, 100%);
+    margin: 28px auto 0;
+    padding: clamp(25px, 5vw, 45px);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(29,18,53,.88),
+            rgba(10,7,20,.88)
+        );
+
+    border: 1px solid var(--border);
+    border-radius: 26px;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.55),
+        inset 0 1px rgba(255,255,255,.05);
+
+    backdrop-filter: blur(16px);
+}
+
+.royal-panel::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 30%,
+            rgba(255,215,106,.05),
+            transparent 70%
+        );
+
+    pointer-events: none;
+}
+
+.panel-title {
+    color: var(--gold);
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    margin-bottom: 15px;
+}
+
+.panel-text {
+    color: #d1cadc;
+    line-height: 1.75;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+.button {
+    position: relative;
+
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 15px;
+
+    padding: 15px 25px;
+
+    color: white;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.09),
+            rgba(255,255,255,.025)
+        );
+
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease,
+        background .2s ease;
+}
+
+.button:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,215,106,.55);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.35),
+        0 0 24px rgba(255,215,106,.12);
+}
+
+.button:active {
+    transform: translateY(-1px) scale(.98);
+}
+
+.button.gold {
+    color: #211300;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff0a8,
+            #ffd76a 50%,
+            #d49328
+        );
+
+    border-color: #ffe79a;
+
+    box-shadow:
+        0 8px 30px rgba(255,190,55,.22);
+}
+
+.button.red {
+    background: linear-gradient(135deg, #ff6379, #a8203b);
+    border-color: rgba(255,120,140,.5);
+}
+
+.button.green {
+    background: linear-gradient(135deg, #51e9a4, #167c58);
+    border-color: rgba(100,255,190,.4);
+}
+
+.button.purple {
+    background: linear-gradient(135deg, #a178ff, #5130a5);
+    border-color: rgba(190,160,255,.4);
+}
+
+.button.blue {
+    background: linear-gradient(135deg, #6dc6ff, #2462a8);
+    border-color: rgba(130,210,255,.4);
+}
+
+
+/* =========================================================
+   KING
+========================================================= */
+
+.king {
+    font-size: clamp(5rem, 16vw, 9rem);
+    line-height: 1;
+
+    animation: kingFloat 3.5s ease-in-out infinite;
+
+    filter:
+        drop-shadow(0 15px 30px rgba(0,0,0,.7))
+        drop-shadow(0 0 28px rgba(255,215,106,.22));
+}
+
+@keyframes kingFloat {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-12px) rotate(1deg); }
+}
+
+
+/* =========================================================
+   RULE CARDS
+========================================================= */
+
+.rules {
+    display: grid;
+    gap: 12px;
+    margin: 25px auto;
+    max-width: 600px;
+}
+
+.rule {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 17px 20px;
+
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 15px;
+
+    text-align: left;
+}
+
+.rule-number {
+    width: 36px;
+    height: 36px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: #1d1200;
+    background: var(--gold);
+
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-wrap {
+    width: min(760px, 100%);
+    margin: 0 auto 22px;
+}
+
+.progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    color: var(--muted);
+    font-size: .82rem;
+    letter-spacing: 1px;
+}
+
+.progress-bar {
+    height: 5px;
+    margin-top: 9px;
+
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #9a6bff,
+            #ffd76a
+        );
+
+    transition: width .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.stars-earned {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 17px 0 5px;
+}
+
+.star {
+    font-size: 1.35rem;
+    opacity: .18;
+    filter: grayscale(1);
+    transition: .4s ease;
+}
+
+.star.earned {
+    opacity: 1;
+    filter: grayscale(0) drop-shadow(0 0 9px rgba(255,215,106,.7));
+    transform: scale(1.15);
+}
+
+
+/* =========================================================
+   CHALLENGE ICON
+========================================================= */
+
+.challenge-icon {
+    font-size: 4.8rem;
+    margin-bottom: 12px;
+
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+
+/* =========================================================
+   CHOICE CARDS
+========================================================= */
+
+.choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+
+    width: min(700px, 100%);
+    margin: 30px auto 0;
+}
+
+.choice {
+    min-height: 145px;
+
+    padding: 24px;
+
+    border-radius: 22px;
+
+    border: 1px solid rgba(255,255,255,.1);
+
+    cursor: pointer;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+}
+
+.choice:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+}
+
+.choice .emoji {
+    font-size: 2.4rem;
+}
+
+.choice strong {
+    font-size: 1.15rem;
+}
+
+.choice small {
+    color: rgba(255,255,255,.65);
+}
+
+.choice.easy {
+    background: linear-gradient(145deg, rgba(78,45,110,.75), rgba(30,17,49,.8));
+}
+
+.choice.hard {
+    background: linear-gradient(145deg, rgba(115,75,23,.72), rgba(40,25,10,.85));
+}
+
+.choice.math {
+    background: linear-gradient(145deg, rgba(140,25,46,.8), rgba(45,9,18,.9));
+}
+
+.choice.english {
+    background: linear-gradient(145deg, rgba(20,105,73,.8), rgba(7,38,27,.9));
+}
+
+
+/* =========================================================
+   TEST QUESTION
+========================================================= */
+
+.question {
+    margin: 22px auto;
+
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    color: #fff8df;
+}
+
+.word {
+    display: inline-block;
+
+    margin: 12px 0;
+    padding: 12px 20px;
+
+    color: var(--gold-light);
+
+    border: 1px solid rgba(255,215,106,.25);
+    border-radius: 13px;
+
+    background: rgba(255,215,106,.05);
+
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    letter-spacing: 3px;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.answer-input {
+    width: min(570px, 100%);
+
+    padding: 17px 20px;
+
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 14px;
+
+    outline: none;
+
+    color: white;
+    background: rgba(0,0,0,.28);
+
+    font-family: inherit;
+    font-size: 1rem;
+
+    transition: .2s ease;
+}
+
+.answer-input:focus {
+    border-color: rgba(255,215,106,.6);
+    box-shadow: 0 0 25px rgba(255,215,106,.1);
+}
+
+
+/* =========================================================
+   RESULT MESSAGE
+========================================================= */
+
+.result {
+    margin: 22px auto 0;
+
+    max-width: 650px;
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.08);
+
+    line-height: 1.65;
+
+    animation: resultIn .4s ease;
+}
+
+@keyframes resultIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   FROG
+========================================================= */
+
+.frog {
+    font-size: clamp(6rem, 20vw, 11rem);
+
+    animation:
+        frogHop .8s ease-in-out infinite alternate,
+        frogWobble 2s ease-in-out infinite;
+}
+
+@keyframes frogHop {
+    from { transform: translateY(0) rotate(-3deg); }
+    to { transform: translateY(-15px) rotate(3deg); }
+}
+
+@keyframes frogWobble {
+    0%,100% { filter: drop-shadow(0 0 18px rgba(50,255,130,.15)); }
+    50% { filter: drop-shadow(0 0 35px rgba(50,255,130,.3)); }
+}
+
+
+/* =========================================================
+   SHAKE
+========================================================= */
+
+.shake {
+    animation: shake .45s ease;
+}
+
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-12px); }
+    40% { transform: translateX(12px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+}
+
+
+/* =========================================================
+   RATING GRID
+========================================================= */
+
+.rating-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    width: min(700px, 100%);
+    margin: 28px auto 0;
+
+    gap: 10px;
+}
+
+.rating-button {
+    display: grid;
+    grid-template-columns: 55px 1fr;
+
+    align-items: center;
+
+    min-height: 65px;
+
+    padding: 8px 16px;
+
+    border-radius: 15px;
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    color: white;
+    background: rgba(255,255,255,.035);
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    text-align: left;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        border-color .2s ease;
+}
+
+.rating-button:hover {
+    transform: translateX(5px);
+    background: rgba(255,255,255,.07);
+    border-color: rgba(255,215,106,.4);
+}
+
+.rating-number {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--gold);
+    text-align: center;
+}
+
+.rating-label {
+    font-size: .95rem;
+    color: #d6cfdf;
+}
+
+
+/* =========================================================
+   FINAL CROWN
+========================================================= */
+
+.final-crown {
+    font-size: clamp(7rem, 24vw, 14rem);
+
+    animation:
+        crownReveal 1.2s cubic-bezier(.17,.89,.32,1.28),
+        crownGlow 2s ease-in-out infinite alternate;
+
+    filter: drop-shadow(0 20px 35px rgba(0,0,0,.7));
+}
+
+@keyframes crownReveal {
+    from {
+        opacity: 0;
+        transform: translateY(80px) scale(.3) rotate(-20deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes crownGlow {
+    from {
+        filter:
+            drop-shadow(0 20px 35px rgba(0,0,0,.7))
+            drop-shadow(0 0 10px rgba(255,215,106,.15));
+    }
+
+    to {
+        filter:
+            drop-shadow(0 20px 35px rgba(0,0,0,.7))
+            drop-shadow(0 0 45px rgba(255,215,106,.55));
+    }
+}
+
+.reward-title {
+    font-size: clamp(2rem, 6vw, 4.5rem);
+
+    color: var(--gold);
+
+    text-shadow:
+        0 0 25px rgba(255,215,106,.18);
+}
+
+.royal-rank {
+    margin: 12px auto 22px;
+
+    color: #f5e8bd;
+
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    letter-spacing: 1px;
+}
+
+.credits {
+    margin-top: 35px;
+
+    color: #8e869f;
+    font-size: .85rem;
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   CONFETTI
+========================================================= */
+
+.confetti-container {
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 50;
+
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+
+    width: 8px;
+    height: 14px;
+
+    top: -20px;
+
+    animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+    to {
+        transform:
+            translateY(110vh)
+            rotate(720deg);
+    }
+}
+
+
+/* =========================================================
+   HIDDEN
+========================================================= */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .game-content {
+        width: 92%;
+        padding: 35px 0;
+    }
+
+    .royal-panel {
+        border-radius: 20px;
+        padding: 25px 18px;
+    }
+
+    .choice-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rating-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .button-row {
+        width: 100%;
+    }
+
+    .rule {
+        padding: 14px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div id="game">
+
+    <div class="stars"></div>
+    <div class="particles" id="particles"></div>
+    <div class="vignette"></div>
+
+    <div class="game-content">
+
+
+        <!-- =================================================
+             SCREEN 0 — INTRO
+        ================================================== -->
+
+        <section class="screen active" id="intro">
+
+            <div class="castle">🏰</div>
+
+            <div class="eyebrow">
+                A Royal Challenge Awaits
+            </div>
+
+            <h1 class="title">
+                King Swarup
+            </h1>
+
+            <div class="divider"></div>
+
+            <p class="subtitle">
+                Welcome to the world of the conqueror,
+                the almighty ruler of this kingdom.
+            </p>
+
+            <div class="royal-panel">
+
+                <div class="king">👑</div>
+
+                <h2 class="panel-title">
+                    THE ROYAL TRIALS
+                </h2>
+
+                <p class="panel-text">
+                    Only those brave enough to enter
+                    may discover what awaits beyond
+                    the gates of the kingdom.
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button gold"
+                        onclick="showRules()">
+                        ENTER THE KINGDOM →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 1 — RULES
+        ================================================== -->
+
+        <section class="screen" id="rulesScreen">
+
+            <div class="challenge-icon">📜</div>
+
+            <div class="eyebrow">
+                Royal Law
+            </div>
+
+            <h1 class="title">
+                THE RULES
+            </h1>
+
+            <div class="rules">
+
+                <div class="rule">
+                    <div class="rule-number">1</div>
+                    <div>
+                        <strong>OBEY THE KING.</strong>
+                    </div>
+                </div>
+
+                <div class="rule">
+                    <div class="rule-number">2</div>
+                    <div>
+                        <strong>REMEMBER RULE NUMBER 1.</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <p class="subtitle">
+                Failure to respect royal law may have...
+                unexpected consequences.
+            </p>
+
+            <div class="button-row">
+
+                <button
+                    class="button gold"
+                    onclick="startLoyalty()">
+                    START THE GAME 👑
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 2 — LOYALTY
+        ================================================== -->
+
+        <section class="screen" id="loyalty">
+
+            <div class="progress-wrap">
+                <div class="progress-top">
+                    <span>TRIAL 01</span>
+                    <span>LOYALTY</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div
+                        class="progress-fill"
+                        id="progress1">
+                    </div>
+                </div>
+
+                <div class="stars-earned" id="stars1">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+
+            <div class="challenge-icon">👑</div>
+
+            <div class="eyebrow">
+                The First Trial
+            </div>
+
+            <h1 class="title">
+                Loyalty Test
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2 class="panel-title">
+                    BOW TO THE ALMIGHTY
+                </h2>
+
+                <p class="panel-text">
+                    Demonstrate your loyalty to the King
+                    if you wish to continue your journey.
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button gold"
+                        onclick="loyaltyBow()">
+                        🙇 I WILL BOW
+                    </button>
+
+                    <button
+                        class="button purple"
+                        onclick="loyaltyRefuse()">
+                        😤 NO, I WILL NOT
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 3 — LOYALTY PASS
+        ================================================== -->
+
+        <section class="screen" id="loyaltyPass">
+
+            <div class="king">👑</div>
+
+            <div class="eyebrow">
+                Wise Decision
+            </div>
+
+            <h1 class="title">
+                The King Is Pleased
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2 class="panel-title">
+                    YOUR LOYALTY HAS BEEN ACKNOWLEDGED.
+                </h2>
+
+                <p class="panel-text">
+                    You have survived the first trial.
+                    The kingdom recognizes your obedience.
+                </p>
+
+                <div class="stars-earned">
+                    <span class="star earned">⭐</span>
+                </div>
+
+                <p class="panel-text">
+                    <strong style="color:#ffd76a;">
+                        STAR #1 EARNED
+                    </strong>
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button gold"
+                        onclick="goIntelligence()">
+                        CONTINUE TO THE NEXT TRIAL →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 4 — FROG
+        ================================================== -->
+
+        <section class="screen" id="frog">
+
+            <div class="frog">🐸</div>
+
+            <div class="eyebrow">
+                Royal Punishment
+            </div>
+
+            <h1 class="title">
+                FOOLISH MORTAL
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2
+                    class="panel-title"
+                    id="frogTitle">
+                    YOU HAVE BEEN TURNED INTO A FROG.
+                </h2>
+
+                <p
+                    class="panel-text"
+                    id="frogText">
+                    Mere resistance to King Swarup
+                    has consequences.
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button green"
+                        onclick="frogReturn()">
+                        🙇 BOW TO RETURN
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 5 — INTELLIGENCE CHOICE
+        ================================================== -->
+
+        <section class="screen" id="intelligence">
+
+            <div class="progress-wrap">
+                <div class="progress-top">
+                    <span>TRIAL 02</span>
+                    <span>INTELLIGENCE</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div
+                        class="progress-fill"
+                        id="progress2">
+                    </div>
+                </div>
+
+                <div class="stars-earned">
+                    <span class="star earned">⭐</span>
+                    <span class="star" id="star2">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+
+            <div class="challenge-icon">🧠</div>
+
+            <div class="eyebrow">
+                The Second Trial
+            </div>
+
+            <h1 class="title">
+                Intelligence Test
+            </h1>
+
+            <p class="subtitle">
+                Choose your difficulty.
+                The King is watching.
+            </p>
+
+            <div class="choice-grid">
+
+                <button
+                    class="choice easy"
+                    onclick="chooseEasy()">
+
+                    <span class="emoji">😌</span>
+
+                    <strong>
+                        EASY LEVEL
+                    </strong>
+
+                    <small>
+                        The safe path...
+                    </small>
+
+                </button>
+
+                <button
+                    class="choice hard"
+                    onclick="chooseHard()">
+
+                    <span class="emoji">🔥</span>
+
+                    <strong>
+                        HARD LEVEL
+                    </strong>
+
+                    <small>
+                        The daring path...
+                    </small>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 6 — HARD PRAISE
+        ================================================== -->
+
+        <section class="screen" id="hardPass">
+
+            <div class="king">👑</div>
+
+            <div class="eyebrow">
+                Impressive
+            </div>
+
+            <h1 class="title">
+                The Daring
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2 class="panel-title">
+                    YOU CHOSE THE HARD PATH.
+                </h2>
+
+                <p class="panel-text">
+                    At least you possess enough courage
+                    to challenge yourself.
+                </p>
+
+                <div class="stars-earned">
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                </div>
+
+                <p class="panel-text">
+                    <strong style="color:#ffd76a;">
+                        STAR #2 EARNED
+                    </strong>
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button gold"
+                        onclick="showSubjectChoice()">
+                        CHOOSE YOUR TEST →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 7 — SUBJECT CHOICE
+        ================================================== -->
+
+        <section class="screen" id="subjectChoice">
+
+            <div class="challenge-icon">⚔️</div>
+
+            <div class="eyebrow">
+                The Daring Path
+            </div>
+
+            <h1 class="title">
+                Choose Your Test
+            </h1>
+
+            <p class="subtitle">
+                Your choice determines the nature
+                of the next challenge.
+            </p>
+
+            <div class="choice-grid">
+
+                <button
+                    class="choice math"
+                    onclick="showMaths()">
+
+                    <span class="emoji">🔴</span>
+
+                    <strong>
+                        MATHS TEST
+                    </strong>
+
+                    <small>
+                        Numbers await.
+                    </small>
+
+                </button>
+
+                <button
+                    class="choice english"
+                    onclick="showEnglish()">
+
+                    <span class="emoji">🟢</span>
+
+                    <strong>
+                        ENGLISH TEST
+                    </strong>
+
+                    <small>
+                        Words await.
+                    </small>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 8 — MATHS
+        ================================================== -->
+
+        <section class="screen" id="maths">
+
+            <div class="challenge-icon">🔴</div>
+
+            <div class="eyebrow">
+                Mathematical Trial
+            </div>
+
+            <h1 class="title">
+                Maths Test
+            </h1>
+
+            <div class="royal-panel">
+
+                <div class="question">
+                    What is
+                    <strong style="color:#ff7b8d;">
+                        5 + 5
+                    </strong>
+                    ?
+                </div>
+
+                <input
+                    class="answer-input"
+                    id="mathAnswer"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="Enter your answer...">
+
+                <div class="button-row">
+
+                    <button
+                        class="button red"
+                        onclick="submitMaths()">
+                        SUBMIT ANSWER
+                    </button>
+
+                    <button
+                        class="button"
+                        onclick="showSubjectChoice()">
+                        ← BACK
+                    </button>
+
+                </div>
+
+                <div
+                    class="result hidden"
+                    id="mathResult">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 9 — ENGLISH
+        ================================================== -->
+
+        <section class="screen" id="english">
+
+            <div class="challenge-icon">🟢</div>
+
+            <div class="eyebrow">
+                Linguistic Trial
+            </div>
+
+            <h1 class="title">
+                English Test
+            </h1>
+
+            <div class="royal-panel">
+
+                <p class="panel-text">
+                    What is the meaning of:
+                </p>
+
+                <div class="word">
+                    ANTEDILUVIAN
+                </div>
+
+                <p class="panel-text">
+                    Enter the meaning in your own words.
+                </p>
+
+                <input
+                    class="answer-input"
+                    id="englishAnswer"
+                    type="text"
+                    placeholder="Type your answer...">
+
+                <div class="button-row">
+
+                    <button
+                        class="button green"
+                        onclick="submitEnglish()">
+                        SUBMIT ANSWER
+                    </button>
+
+                    <button
+                        class="button"
+                        onclick="showSubjectChoice()">
+                        ← BACK
+                    </button>
+
+                </div>
+
+                <div
+                    class="result hidden"
+                    id="englishResult">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 10 — STYLE TEST
+        ================================================== -->
+
+        <section class="screen" id="styleTest">
+
+            <div class="progress-wrap">
+                <div class="progress-top">
+                    <span>TRIAL 03</span>
+                    <span>STYLE</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div
+                        class="progress-fill"
+                        id="progress3">
+                    </div>
+                </div>
+
+                <div class="stars-earned">
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                    <span class="star earned" id="star3">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+
+            <div class="challenge-icon">✨</div>
+
+            <div class="eyebrow">
+                The Third Trial
+            </div>
+
+            <h1 class="title">
+                Royal Style Test
+            </h1>
+
+            <p class="subtitle">
+                How would you rate your royal style?
+                Choose wisely.
+            </p>
+
+            <div class="rating-grid">
+
+                <button class="rating-button" onclick="styleChoice(1)">
+                    <span class="rating-number">1</span>
+                    <span class="rating-label">Extremely Ugly</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(2)">
+                    <span class="rating-number">2</span>
+                    <span class="rating-label">Very Ugly</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(3)">
+                    <span class="rating-number">3</span>
+                    <span class="rating-label">Ugly</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(4)">
+                    <span class="rating-number">4</span>
+                    <span class="rating-label">Below Average</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(5)">
+                    <span class="rating-number">5</span>
+                    <span class="rating-label">Average</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(6)">
+                    <span class="rating-number">6</span>
+                    <span class="rating-label">Decent</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(7)">
+                    <span class="rating-number">7</span>
+                    <span class="rating-label">Good</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(8)">
+                    <span class="rating-number">8</span>
+                    <span class="rating-label">Cute</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(9)">
+                    <span class="rating-number">9</span>
+                    <span class="rating-label">Model</span>
+                </button>
+
+                <button class="rating-button" onclick="styleChoice(10)">
+                    <span class="rating-number">10</span>
+                    <span class="rating-label">Goddess 👑</span>
+                </button>
+
+            </div>
+
+            <div
+                class="result hidden"
+                id="styleResult">
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 11 — FINAL TEST
+        ================================================== -->
+
+        <section class="screen" id="finalTest">
+
+            <div class="progress-wrap">
+                <div class="progress-top">
+                    <span>FINAL TRIAL</span>
+                    <span>UNKNOWN</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div
+                        class="progress-fill"
+                        id="progress4">
+                    </div>
+                </div>
+
+                <div class="stars-earned">
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                    <span class="star" id="star4">⭐</span>
+                </div>
+            </div>
+
+            <div class="challenge-icon">🧠</div>
+
+            <div class="eyebrow">
+                The Final Trial
+            </div>
+
+            <h1 class="title">
+                Ultimate IQ Test
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2 class="panel-title">
+                    CHOOSE YOUR FATE
+                </h2>
+
+                <p class="panel-text">
+                    One path is safe.
+                    The other requires courage.
+                </p>
+
+                <div class="choice-grid">
+
+                    <button
+                        class="choice easy"
+                        onclick="skipFinal()">
+
+                        <span class="emoji">🚪</span>
+
+                        <strong>
+                            SKIP THE QUESTION
+                        </strong>
+
+                        <small>
+                            Proceed to the next level
+                        </small>
+
+                    </button>
+
+                    <button
+                        class="choice hard"
+                        onclick="faceThermodynamics()">
+
+                        <span class="emoji">🌡️</span>
+
+                        <strong>
+                            ANSWER THERMODYNAMICS
+                        </strong>
+
+                        <small>
+                            Face the unknown
+                        </small>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 12 — FINAL PASS
+        ================================================== -->
+
+        <section class="screen" id="finalPass">
+
+            <div class="king">🎉</div>
+
+            <div class="eyebrow">
+                The Truth Revealed
+            </div>
+
+            <h1 class="title">
+                Congratulations
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2 class="panel-title">
+                    YOU PASSED THE FINAL TRIAL.
+                </h2>
+
+                <p class="panel-text">
+                    But there is something you should know...
+                </p>
+
+                <div class="divider"></div>
+
+                <h2
+                    style="
+                        color:#ffd76a;
+                        font-size:clamp(1.5rem,5vw,2.5rem);
+                        margin-bottom:15px;
+                    ">
+                    THIS WAS NEVER AN IQ TEST.
+                </h2>
+
+                <p class="panel-text">
+                    It was a <strong style="color:#fff;">
+                    bravery test.</strong>
+                </p>
+
+                <p
+                    class="panel-text"
+                    style="margin-top:12px;">
+                    You were brave enough to face
+                    the unknown instead of running away.
+                </p>
+
+                <div class="stars-earned">
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                    <span class="star earned">⭐</span>
+                </div>
+
+                <p class="panel-text">
+                    <strong style="color:#ffd76a;">
+                        FINAL STAR EARNED
+                    </strong>
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button gold"
+                        onclick="collectFinalStar()">
+                        ⭐ COLLECT STAR
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 13 — NOTICE
+        ================================================== -->
+
+        <section class="screen" id="notice">
+
+            <div class="challenge-icon">📜</div>
+
+            <div class="eyebrow">
+                Official Royal Notice
+            </div>
+
+            <h1 class="title">
+                Royal Decree
+            </h1>
+
+            <div class="royal-panel">
+
+                <h2 class="panel-title">
+                    OFFICIAL NOTICE OF COMPLETION
+                </h2>
+
+                <p class="panel-text">
+
+                    By order of the supreme authority
+                    of <strong style="color:#ffd76a;">
+                    King Swarup</strong>,
+
+                    it is hereby declared that the
+                    brave subject before us has officially
+                    completed <strong>
+                    ALL THE TRIALS OF THE KINGDOM.</strong>
+
+                </p>
+
+                <p
+                    class="panel-text"
+                    style="margin-top:18px;">
+
+                    Through loyalty, intelligence,
+                    courage, questionable decisions,
+                    and an alarming amount of patience...
+
+                </p>
+
+                <h2
+                    style="
+                        color:#ffd76a;
+                        margin-top:22px;
+                    ">
+                    YOU HAVE COMPLETED THE ENTIRE KINGDOM.
+                </h2>
+
+                <p
+                    class="panel-text"
+                    style="margin-top:18px;">
+
+                    Your performance has been permanently
+                    recorded in the Royal Archives.
+
+                </p>
+
+                <div class="button-row">
+
+                    <button
+                        class="button gold"
+                        onclick="showReward()">
+                        👑 CLICK HERE FOR REWARD
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SCREEN 14 — REWARD
+        ================================================== -->
+
+        <section class="screen" id="reward">
+
+            <div class="final-crown">
+                👑
+            </div>
+
+            <div class="eyebrow">
+                Royal Appointment
+            </div>
+
+            <h1 class="reward-title">
+                SUPREME ROYAL ADVISOR
+            </h1>
+
+            <div class="royal-panel">
+
+                <p class="panel-text">
+
+                    By the unquestionable authority
+                    of <strong style="color:#ffd76a;">
+                    King Swarup</strong>,
+
+                    you are hereby appointed as:
+
+                </p>
+
+                <div class="royal-rank">
+                    Guardian of the Kingdom
+                </div>
+
+                <p class="panel-text">
+
+                    Keeper of Royal Secrets<br>
+                    Chief Decision Maker<br>
+                    Royal Strategy Consultant<br>
+                    Official Survivor of the King's Trials
+
+                </p>
+
+                <div class="divider"></div>
+
+                <p class="panel-text">
+
+                    Your loyalty has been witnessed.<br>
+                    Your courage has been tested.<br>
+                    Your patience has been questioned. 😂
+
+                </p>
+
+                <p
+                    class="panel-text"
+                    style="margin-top:18px;">
+
+                    The kingdom recognizes your
+                    extraordinary achievement.
+
+                </p>
+
+                <h2
+                    style="
+                        color:#ffd76a;
+                        margin-top:25px;
+                    ">
+                    May your wisdom guide the empire...
+                </h2>
+
+                <p
+                    style="
+                        color:#aaa2bd;
+                        margin-top:12px;
+                    ">
+                    ...and may you never forget who the King is. 😌👑
+                </p>
+
+                <div class="credits">
+                    THANK YOU FOR PLAYING
+                    <br>
+                    — KING SWARUP 👑
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+</div>
+
+
+<div
+    class="confetti-container"
+    id="confetti">
+</div>
+
+
+<script>
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+const particleContainer =
+    document.getElementById("particles");
+
+for (let i = 0; i < 35; i++) {
+
+    const particle =
+        document.createElement("div");
+
+    particle.className = "particle";
+
+    particle.style.left =
+        Math.random() * 100 + "%";
+
+    particle.style.animationDuration =
+        (8 + Math.random() * 15) + "s";
+
+    particle.style.animationDelay =
+        (-Math.random() * 15) + "s";
+
+    particle.style.opacity =
+        .25 + Math.random() * .6;
+
+    particleContainer.appendChild(particle);
+}
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentScreen = "intro";
+
+let stars = 0;
+
+let frogReturnTarget = "loyalty";
+
+
+/* =========================================================
+   SCREEN NAVIGATION
+========================================================= */
+
+function showScreen(id) {
+
+    const screens =
+        document.querySelectorAll(".screen");
+
+    screens.forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    const target =
+        document.getElementById(id);
+
+    if (!target) return;
+
+    target.classList.add("active");
+
+    currentScreen = id;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function setProgress(id, percent) {
+
+    const bar =
+        document.getElementById(id);
+
+    if (bar) {
+        bar.style.width = percent + "%";
+    }
+}
+
+
+function earnStar(number) {
+
+    stars = Math.max(stars, number);
+
+    const allStars =
+        document.querySelectorAll(".star");
+
+    allStars.forEach((star, index) => {
+
+        if (index < stars) {
+            star.classList.add("earned");
+        }
+
+    });
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+function showRules() {
+
+    showScreen("rulesScreen");
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+function startLoyalty() {
+
+    setProgress("progress1", 25);
+
+    showScreen("loyalty");
+
+}
+
+
+/* =========================================================
+   LEVEL 1 — LOYALTY
+========================================================= */
+
+function loyaltyBow() {
+
+    earnStar(1);
+
+    setProgress("progress1", 100);
+
+    showScreen("loyaltyPass");
+
+}
+
+
+function loyaltyRefuse() {
+
+    frogReturnTarget = "loyalty";
+
+    punish(
+        "YOU DARE REFUSE THE KING?",
+        "Mere resistance to King Swarup has consequences."
+    );
+
+}
+
+
+/* =========================================================
+   FROG PUNISHMENT
+========================================================= */
+
+function punish(title, text) {
+
+    document.getElementById("frogTitle").textContent =
+        title;
+
+    document.getElementById("frogText").textContent =
+        text;
+
+    const game =
+        document.getElementById("game");
+
+    game.classList.remove("shake");
+
+    void game.offsetWidth;
+
+    game.classList.add("shake");
+
+    showScreen("frog");
+
+}
+
+
+function frogReturn() {
+
+    if (frogReturnTarget === "loyalty") {
+
+        showScreen("loyalty");
+
+    }
+
+    else if (frogReturnTarget === "intelligence") {
+
+        showScreen("intelligence");
+
+    }
+
+    else if (frogReturnTarget === "subjects") {
+
+        showScreen("subjectChoice");
+
+    }
+
+    else if (frogReturnTarget === "style") {
+
+        showScreen("styleTest");
+
+    }
+
+    else if (frogReturnTarget === "final") {
+
+        showScreen("finalTest");
+
+    }
+
+}
+
+
+/* =========================================================
+   LEVEL 2 — INTELLIGENCE
+========================================================= */
+
+function goIntelligence() {
+
+    setProgress("progress2", 20);
+
+    showScreen("intelligence");
+
+}
+
+
+function chooseEasy() {
+
+    frogReturnTarget = "intelligence";
+
+    punish(
+        "YOU CHOSE THE EASY LEVEL.",
+        "You were given a choice... and somehow chose the easy path. The King is disappointed."
+    );
+
+}
+
+
+function chooseHard() {
+
+    earnStar(2);
+
+    setProgress("progress2", 55);
+
+    showScreen("hardPass");
+
+}
+
+
+function showSubjectChoice() {
+
+    setProgress("progress2", 75);
+
+    showScreen("subjectChoice");
+
+}
+
+
+/* =========================================================
+   MATHS
+========================================================= */
+
+function showMaths() {
+
+    document.getElementById("mathAnswer").value = "";
+
+    document.getElementById("mathResult").classList.add("hidden");
+
+    showScreen("maths");
+
+}
+
+
+function submitMaths() {
+
+    const answer =
+        document.getElementById("mathAnswer")
+        .value
+        .trim();
+
+    const result =
+        document.getElementById("mathResult");
+
+    result.classList.remove("hidden");
+
+    if (answer === "10") {
+
+        result.innerHTML =
+            `
+            <strong style="color:#ffd76a;">
+                That was easy.
+            </strong>
+            <br>
+            I expected something more challenging from you.
+            `;
+
+    }
+
+    else {
+
+        result.innerHTML =
+            `
+            <strong style="color:#ff7185;">
+                INCORRECT.
+            </strong>
+            <br>
+            Go back to nursery and take admission again.
+            `;
+
+        setTimeout(() => {
+
+            frogReturnTarget = "subjects";
+
+            punish(
+                "THE KING IS DISAPPOINTED.",
+                "Perhaps basic mathematics should be revisited."
+            );
+
+        }, 1300);
+
+    }
+
+}
+
+
+/* =========================================================
+   ENGLISH
+========================================================= */
+
+function showEnglish() {
+
+    document.getElementById("englishAnswer").value = "";
+
+    document.getElementById("englishResult").classList.add("hidden");
+
+    showScreen("english");
+
+}
+
+
+function submitEnglish() {
+
+    const answer =
+        document.getElementById("englishAnswer")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const result =
+        document.getElementById("englishResult");
+
+    result.classList.remove("hidden");
+
+    const correctWords = [
+        "extremely old",
+        "very old",
+        "ancient",
+        "very ancient",
+        "old fashioned",
+        "old-fashioned",
+        "outdated",
+        "very old-fashioned"
+    ];
+
+    const isCorrect =
+        correctWords.some(word =>
+            answer.includes(word)
+        );
+
+    if (isCorrect) {
+
+        result.innerHTML =
+            `
+            <strong style="color:#52e9a5;">
+                IMPRESSIVE.
+            </strong>
+            <br><br>
+            I know you searched for that answer
+            on your mobile. 😂
+            <br><br>
+            But I'll allow it.
+            You may proceed.
+            `;
+
+        setTimeout(() => {
+
+            showStyleTest();
+
+        }, 2500);
+
+    }
+
+    else {
+
+        result.innerHTML =
+            `
+            <strong style="color:#ff7185;">
+                I WILL NOT TAKE INCOMPETENTS
+                INTO MY EMPIRE.
+            </strong>
+            `;
+
+        setTimeout(() => {
+
+            frogReturnTarget = "subjects";
+
+            punish(
+                "THE KING REJECTS YOUR ANSWER.",
+                "Your place in the Royal Archives remains uncertain."
+            );
+
+        }, 1600);
+
+    }
+
+}
+
+
+/* =========================================================
+   LEVEL 3 — STYLE
+========================================================= */
+
+function showStyleTest() {
+
+    setProgress("progress3", 30);
+
+    showScreen("styleTest");
+
+}
+
+
+const styleRoasts = {
+
+    1:
+        "Extremely ugly? Even the royal paintings are filing a complaint.",
+
+    2:
+        "Very ugly? Perhaps report to the Royal Department of Personal Care first.",
+
+    3:
+        "Ugly? Bold assessment. Unfortunately, still incorrect.",
+
+    4:
+        "Below average? The kingdom expected slightly more confidence.",
+
+    5:
+        "Average? In MY empire? How disappointingly ordinary.",
+
+    6:
+        "Decent? So close... yet still not worthy of the royal seal.",
+
+    8:
+        "Cute? Where did you learn to lie like that? 😂",
+
+    9:
+        "Model? Is there a mirror in your house?",
+
+    10:
+        "Goddess? Yeah, yeah... of the Royal Delusion Department. 😭"
+
+};
+
+
+function styleChoice(number) {
+
+    const result =
+        document.getElementById("styleResult");
+
+    result.classList.remove("hidden");
+
+    if (number === 7) {
+
+        earnStar(3);
+
+        setProgress("progress3", 100);
+
+        result.innerHTML =
+            `
+            <strong
+                style="
+                    color:#ffd76a;
+                    font-size:1.5rem;
+                ">
+                THALA FOR A REASON. 🗿👑
+            </strong>
+            <br><br>
+            The King acknowledges the chosen number.
+            `;
+
+        setTimeout(() => {
+
+            showFinalTest();
+
+        }, 1800);
+
+        return;
+    }
+
+    result.innerHTML =
+        `
+        <strong style="color:#ff7185;">
+            ${styleRoasts[number]}
+        </strong>
+        <br><br>
+        <button
+            class="button purple"
+            onclick="retryStyle()">
+            RETRY
+        </button>
+        `;
+
+}
+
+
+function retryStyle() {
+
+    const result =
+        document.getElementById("styleResult");
+
+    result.classList.add("hidden");
+
+    showScreen("styleTest");
+
+}
+
+
+/* =========================================================
+   FINAL TEST
+========================================================= */
+
+function showFinalTest() {
+
+    setProgress("progress4", 65);
+
+    showScreen("finalTest");
+
+}
+
+
+function skipFinal() {
+
+    frogReturnTarget = "final";
+
+    punish(
+        "COWARD.",
+        "I shall not allow cowards into my empire."
+    );
+
+}
+
+
+function faceThermodynamics() {
+
+    setProgress("progress4", 100);
+
+    showScreen("finalPass");
+
+}
+
+
+/* =========================================================
+   FINAL STAR
+========================================================= */
+
+function collectFinalStar() {
+
+    earnStar(4);
+
+    createConfetti();
+
+    showScreen("notice");
+
+}
+
+
+/* =========================================================
+   REWARD
+========================================================= */
+
+function showReward() {
+
+    createConfetti();
+
+    setTimeout(() => {
+
+        showScreen("reward");
+
+    }, 350);
+
+}
+
+
+/* =========================================================
+   CONFETTI
+========================================================= */
+
+function createConfetti() {
+
+    const container =
+        document.getElementById("confetti");
+
+    container.innerHTML = "";
+
+    const pieces = 90;
+
+    for (let i = 0; i < pieces; i++) {
+
+        const piece =
+            document.createElement("div");
+
+        piece.className = "confetti";
+
+        piece.style.left =
+            Math.random() * 100 + "%";
+
+        piece.style.background =
+            [
+                "#ffd76a",
+                "#a178ff",
+                "#52e9a5",
+                "#ff6379",
+                "#6dc6ff",
+                "#ffffff"
+            ][
+                Math.floor(Math.random() * 6)
+            ];
+
+        piece.style.animationDuration =
+            (2.5 + Math.random() * 3.5) + "s";
+
+        piece.style.animationDelay =
+            Math.random() * .8 + "s";
+
+        piece.style.transform =
+            `rotate(${Math.random() * 360}deg)`;
+
+        container.appendChild(piece);
+
+    }
+
+    setTimeout(() => {
+
+        container.innerHTML = "";
+
+    }, 7000);
+
+}
+
+</script>
+
+</body>
+</html>
